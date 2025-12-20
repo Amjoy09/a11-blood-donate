@@ -43,6 +43,7 @@ export default function AddRequest() {
       recipient_upazila,
       hospital_name,
       blood_group,
+
       donation_status: "pending",
     };
 

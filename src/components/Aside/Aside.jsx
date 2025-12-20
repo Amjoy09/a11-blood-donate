@@ -9,9 +9,18 @@ import {
   MonitorCog,
   MapPinPlus,
 } from "lucide-react";
+import { useContext } from "react";
 import { NavLink } from "react-router";
+import { AuthContext } from "../../provider/AuthProvider";
+import { signOut } from "firebase/auth";
+import auth from "../../firebase/firebase.config";
 
 export default function Aside() {
+  const { role } = useContext(AuthContext);
+
+  const handleLogout = () => {
+    signOut(auth);
+  };
   return (
     <aside className="h-screen w-64 sticky top-0 text-white flex flex-col bg-linear-to-b from-cyan-900 to-red-900">
       {/* Logo / Header */}
@@ -26,16 +35,22 @@ export default function Aside() {
           icon={<Home size={18} />}
           label="Dashboard"
         />
-        <SidebarLink
-          to="/dashboard/users"
-          icon={<Users size={18} />}
-          label="Users"
-        />
-        <SidebarLink
-          to="/dashboard/add-request"
-          icon={<MapPinPlus size={18} />}
-          label="Add Request"
-        />
+
+        {role == "admin" && (
+          <SidebarLink
+            to="/dashboard/all-users"
+            icon={<Users size={18} />}
+            label="All Users"
+          />
+        )}
+
+        {role == "donor" && (
+          <SidebarLink
+            to="/dashboard/add-request"
+            icon={<MapPinPlus size={18} />}
+            label="Add Request"
+          />
+        )}
         <SidebarLink
           to="/dashboard/manage-product"
           icon={<MonitorCog size={18} />}
@@ -60,7 +75,10 @@ export default function Aside() {
 
       {/* Footer */}
       <div className="p-4">
-        <button className="flex items-center gap-3 text-sm text-yellow-300 hover:text-red-400 w-full px-3 py-2 rounded-xl hover:bg-cyan-700 transition">
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-3 text-sm text-yellow-300 hover:text-white  w-full px-3 py-2 rounded-xl hover:bg-cyan-700 transition"
+        >
           <LogOut size={18} />
           Logout
         </button>

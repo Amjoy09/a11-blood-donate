@@ -8,6 +8,8 @@ import DashboardLayout from "../DashboardLayout/DashboardLayout";
 import MainDashboard from "../pages/Dasboard/MainDashboard";
 import ManageProduct from "../pages/Dasboard/ManageProduct/ManageProduct";
 import AddRequest from "../pages/Dasboard/AddRequest";
+import AllUsers from "../pages/Dasboard/AllUsers";
+import PrivateRoute from "./PrivateRoute";
 
 const router = createBrowserRouter([
   {
@@ -32,11 +34,19 @@ const router = createBrowserRouter([
   },
   {
     path: "dashboard",
-    element: <DashboardLayout></DashboardLayout>,
+    element: (
+      <PrivateRoute>
+        <DashboardLayout></DashboardLayout>
+      </PrivateRoute>
+    ),
     children: [
       {
         path: "/dashboard",
         element: <MainDashboard></MainDashboard>,
+      },
+      {
+        path: "all-users",
+        element: <AllUsers></AllUsers>,
       },
       {
         path: "add-request",

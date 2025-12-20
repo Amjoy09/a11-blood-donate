@@ -23,12 +23,10 @@ const RegisterPage = () => {
       setUpazilas(res.data.upazilas);
     });
 
-    axios.get("/district.json").then((res) => {
+    axios.get("./district.json").then((res) => {
       setDistricts(res.data.districts);
     });
   }, []);
-
-  console.log(upazila);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
