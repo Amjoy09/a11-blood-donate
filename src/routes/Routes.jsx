@@ -6,10 +6,11 @@ import RegisterPage from "../pages/RegisterPage";
 import ErrorPage from "../pages/ErrorPage";
 import DashboardLayout from "../DashboardLayout/DashboardLayout";
 import MainDashboard from "../pages/Dasboard/MainDashboard";
-import ManageProduct from "../pages/Dasboard/ManageProduct/ManageProduct";
+
 import AddRequest from "../pages/Dasboard/AddRequest";
 import AllUsers from "../pages/Dasboard/AllUsers";
 import PrivateRoute from "./PrivateRoute";
+import MyRequest from "../pages/MyRequest";
 
 const router = createBrowserRouter([
   {
@@ -53,8 +54,8 @@ const router = createBrowserRouter([
         element: <AddRequest></AddRequest>,
       },
       {
-        path: "manage-product",
-        element: <ManageProduct></ManageProduct>,
+        path: "my-request",
+        element: <MyRequest></MyRequest>,
       },
     ],
   },

@@ -34,6 +34,7 @@ export default function AddRequest() {
     const recipient_upazila = upazila;
     const hospital_name = form.hospital_name.value;
     const blood_group = form.blood_group.value;
+    const donation_status = form.donation_status.value;
 
     const formData = {
       requester_name,
@@ -43,8 +44,7 @@ export default function AddRequest() {
       recipient_upazila,
       hospital_name,
       blood_group,
-
-      donation_status: "pending",
+      donation_status,
     };
 
     axiosSecure

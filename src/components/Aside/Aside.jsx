@@ -4,10 +4,9 @@ import {
   Package,
   ShoppingCart,
   BarChart3,
-  Settings,
   LogOut,
-  MonitorCog,
-  MapPinPlus,
+  SmilePlus,
+  LayersPlus,
 } from "lucide-react";
 import { useContext } from "react";
 import { NavLink } from "react-router";
@@ -47,14 +46,14 @@ export default function Aside() {
         {role == "donor" && (
           <SidebarLink
             to="/dashboard/add-request"
-            icon={<MapPinPlus size={18} />}
+            icon={<LayersPlus size={18} />}
             label="Add Request"
           />
         )}
         <SidebarLink
-          to="/dashboard/manage-product"
-          icon={<MonitorCog size={18} />}
-          label="Manage Products"
+          to="/dashboard/my-request"
+          icon={<SmilePlus size={18} />}
+          label="My Request"
         />
         <SidebarLink
           to="/dashboard/orders"
@@ -66,11 +65,11 @@ export default function Aside() {
           icon={<BarChart3 size={18} />}
           label="Reports"
         />
-        <SidebarLink
+        {/* <SidebarLink
           to="/dashboard/settings"
           icon={<Settings size={18} />}
           label="Settings"
-        />
+        /> */}
       </nav>
 
       {/* Footer */}

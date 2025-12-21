@@ -4,7 +4,7 @@ import { Loader } from "lucide-react";
 import { Navigate } from "react-router";
 
 const PrivateRoute = ({ children }) => {
-  const { user, loading, roleLoading } = useContext(AuthContext);
+  const { user, loading, roleLoading, userStatus } = useContext(AuthContext);
 
   if (loading || roleLoading) {
     return (
@@ -14,7 +14,7 @@ const PrivateRoute = ({ children }) => {
     );
   }
 
-  if (!user) {
+  if (!user || !userStatus == "active") {
     return <Navigate to={"/login"}></Navigate>;
   }
   return children;
