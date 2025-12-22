@@ -11,6 +11,8 @@ import AddRequest from "../pages/Dasboard/AddRequest";
 import AllUsers from "../pages/Dasboard/AllUsers";
 import PrivateRoute from "./PrivateRoute";
 import MyRequest from "../pages/MyRequest";
+import Donate from "../pages/Donate";
+import PaymentSuccess from "../pages/PaymentSuccess";
 
 const router = createBrowserRouter([
   {
@@ -30,6 +32,14 @@ const router = createBrowserRouter([
       {
         path: "/register",
         element: <RegisterPage></RegisterPage>,
+      },
+      {
+        path: "/donate",
+        element: <Donate></Donate>,
+      },
+      {
+        path: "/payment-success",
+        element: <PaymentSuccess></PaymentSuccess>,
       },
     ],
   },
