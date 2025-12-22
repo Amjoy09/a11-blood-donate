@@ -135,6 +135,7 @@ export default function AddRequest() {
               onChange={(e) => setDistrict(e.target.value)}
               className="w-full rounded-lg border bg-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-300"
             >
+              <option value="">Select District</option>
               {districts.map((d) => (
                 <option value={d?.name} key={d?.id}>
                   {d?.name} ({d?.bn_name})
@@ -151,7 +152,7 @@ export default function AddRequest() {
               onChange={(e) => setUpazila(e.target.value)}
               className="w-full rounded-lg border bg-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-300"
             >
-              <option value="">Select upazila</option>
+              <option value="">Select Upazila</option>
               {upazilas.map((u) => (
                 <option value={u?.name} key={u?.id}>
                   {u?.name} ({u?.bn_name})

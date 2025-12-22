@@ -34,24 +34,24 @@ const LoginPage = () => {
       });
   };
 
-  const googleSignin = () => {
-    handleGoogleSignin()
-      .then((result) => {
-        const user = result.user;
-        setUser(user);
-        toast("Google Login Successful!");
-        const redirectPath = location.state?.from || "/";
-        navigate(redirectPath, { replace: true });
-      })
-      .catch((err) => {
-        console.log(err);
-        toast("Google Login failed!");
-      });
-  };
+  // const googleSignin = () => {
+  //   handleGoogleSignin()
+  //     .then((result) => {
+  //       const user = result.user;
+  //       setUser(user);
+  //       toast("Google Login Successful!");
+  //       const redirectPath = location.state?.from || "/";
+  //       navigate(redirectPath, { replace: true });
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //       toast("Google Login failed!");
+  //     });
+  // };
 
-  const handleForget = () => {
-    navigate(`/forget/${email}`);
-  };
+  // const handleForget = () => {
+  //   navigate(`/forget/${email}`);
+  // };
 
   return (
     <div className="py-10 md:bg-blue-500 bg-none">
@@ -89,25 +89,32 @@ const LoginPage = () => {
               )}
             </button>
           </div>
-          <button
+
+          {/* FORGET PASSWORD */}
+
+          {/* <button
             onClick={handleForget}
             className="text-lg font-semibold hover:underline cursor-pointer"
           >
             Forget Password?
-          </button>
+          </button> */}
           <button
             type="submit"
             className="bg-blue-500 hover:bg-blue-400 text-center text-white text-xl font-semibold py-3 mt-3 rounded-sm cursor-pointer"
           >
             Login
           </button>
-          <button
+
+          {/* GOOGLE LOGIN   */}
+
+          {/* <button
             onClick={googleSignin}
             className="text-center text-lg font-semibold border border-gray-400 py-2.5 px-3 mt-3 rounded-sm flex items-center justify-center gap-2 hover:bg-orange-500 hover:text-white hover:font-normal cursor-pointer"
           >
             <FcGoogle size={24} />
             Login With Google
-          </button>
+          </button> */}
+
           <p className="text-[18px] font-semibold text-center">
             Don't Have an Account?{" "}
             <Link

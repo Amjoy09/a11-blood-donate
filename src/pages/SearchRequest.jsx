@@ -40,7 +40,7 @@ const SearchRequest = () => {
           defaultValue="Choose Blood Group"
           className="select"
         >
-          <option selected>Choose Blood Group</option>
+          <option disabled={true}>Choose Blood Group</option>
 
           <option value="A+">A+</option>
           <option value="A-">A-</option>
@@ -54,7 +54,6 @@ const SearchRequest = () => {
         </select>
 
         <select
-          name="district"
           value={district}
           onChange={(e) => setDistrict(e.target.value)}
           className="select"
@@ -68,7 +67,6 @@ const SearchRequest = () => {
           ))}
         </select>
         <select
-          name="upazila"
           value={upazila}
           onChange={(e) => setUpazila(e.target.value)}
           className="select"

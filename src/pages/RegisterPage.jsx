@@ -234,13 +234,13 @@ const RegisterPage = () => {
               Login
             </Link>
           </p>
-          <button
+          {/* <button
             onClick={googleSignup}
             className="text-center text-lg font-semibold border border-gray-400 py-2.5 px-3 mt-3 rounded-sm flex items-center justify-center gap-2 hover:bg-orange-500 hover:text-white hover:font-normal cursor-pointer"
           >
             <FcGoogle size={24} />
             Login With Google
-          </button>
+          </button> */}
         </form>
       </div>
     </div>
