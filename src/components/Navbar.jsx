@@ -41,7 +41,7 @@ const Navbar = () => {
                 <NavLink>All Requests</NavLink>
               </li>
               <li>
-                <NavLink>Search</NavLink>
+                <NavLink to="/search-request">Search</NavLink>
               </li>
 
               <li>
@@ -57,7 +57,7 @@ const Navbar = () => {
               <NavLink>All Requests</NavLink>
             </li>
             <li>
-              <NavLink>Search</NavLink>
+              <NavLink to="/search-request">Search</NavLink>
             </li>
 
             <li>
