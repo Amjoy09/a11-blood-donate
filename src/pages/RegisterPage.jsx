@@ -106,18 +106,18 @@ const RegisterPage = () => {
     }
   };
 
-  const googleSignup = () => {
-    handleGoogleSignin()
-      .then((result) => {
-        const user = result.user;
-        setUser(user);
-        toast("Sign Up with Google successfully");
-        return;
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
+  // const googleSignup = () => {
+  //   handleGoogleSignin()
+  //     .then((result) => {
+  //       const user = result.user;
+  //       setUser(user);
+  //       toast("Sign Up with Google successfully");
+  //       return;
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //     });
+  // };
 
   return (
     <div className="py-10 md:bg-blue-500 bg-none">

@@ -3,6 +3,7 @@ import { Link, NavLink } from "react-router";
 import { AuthContext } from "../provider/AuthProvider";
 import { signOut } from "firebase/auth";
 import auth from "../firebase/firebase.config";
+import logo from "../assets/bloodlogo.png";
 
 const Navbar = () => {
   const { user } = useContext(AuthContext);
@@ -49,7 +50,9 @@ const Navbar = () => {
               </li>
             </ul>
           </div>
-          <a className="btn btn-ghost text-xl">LOGO</a>
+          <NavLink>
+            <img className="w-20 h-20 rounded-full" src={logo} alt="" />
+          </NavLink>
         </div>
         <div className="navbar-center hidden lg:flex">
           <ul className="menu menu-horizontal px-1">
