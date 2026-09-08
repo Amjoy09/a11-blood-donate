@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import useAxiosSecure from "../Hook/useAxiosSecure";
-import { IdCardLanyard } from "lucide-react";
-import Swal from "sweetalert2";
 import { Link } from "react-router";
+import Swal from "sweetalert2";
 
-const MyRequest = () => {
-  const [myRequests, setMyRequests] = useState([]);
-  const [totalRequests, setTotalRequests] = useState(0);
+const AllRequests = () => {
+  const [allRequests, setAllRequests] = useState([]);
+  const [totalRequest, setTotalRequest] = useState(0);
   const [docsPerPage, setDocsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -31,19 +30,59 @@ const MyRequest = () => {
     }
   };
 
+  const handleDelete = async (id, recipientName) => {
+    const result = await Swal.fire({
+      title: `Delete Donation Request of <span style="color:#dc2626;font-weight:bold">${recipientName}</span>?`,
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (!result.isConfirmed) {
+      return;
+    }
+    try {
+      const response = await axiosSecure.delete(`/all-requests/${id}`);
+
+      if (response.data.deletedCount > 0) {
+        const remainingRequests = allRequests.filter(
+          (request) => request._id !== id,
+        );
+
+        setAllRequests(remainingRequests);
+
+        Swal.fire({
+          title: "Deleted!",
+          text: "Donation request has been deleted.",
+          icon: "success",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      Swal.fire({
+        title: "Error",
+        text: "Failed to delete the request.",
+        icon: "error",
+      });
+    }
+  };
+
   useEffect(() => {
     axiosSecure
-      .get(`/my-request?page=${currentPage - 1}&size=${docsPerPage}`)
+      .get(`/all-requests?page=${currentPage - 1}&size=${docsPerPage}`)
       .then((res) => {
-        setMyRequests(res.data.result);
-        setTotalRequests(res.data.totalRequest);
+        setAllRequests(res.data.result);
+        setTotalRequest(res.data.totalRequest);
       })
-      .catch((err) => {
-        console.log(err);
+      .catch((error) => {
+        console.log(error);
       });
-  }, [axiosSecure, currentPage, docsPerPage]);
+  }, [axiosSecure, currentPage, docsPerPage, totalRequest]);
 
-  const totalPages = Math.ceil(totalRequests / docsPerPage);
+  const totalPages = Math.ceil(totalRequest / docsPerPage);
 
   const pages = [...Array(totalPages).keys()].map((i) => i + 1);
 
@@ -59,60 +98,14 @@ const MyRequest = () => {
     }
   };
 
-  const handleDeleteRequest = async (id, recipientName) => {
-    // Step 1: Show confirmation modal
-
-    const result = await Swal.fire({
-      title: `Delete Donation Request of <span style="color:#dc2626;font-weight:bold">${recipientName}</span>?`,
-
-      text: "This Action Is Permanent and cannot be undone",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, Delete",
-      cancelButtonText: "Cancel",
-      confirmButtonColor: "#dc2626",
-      cancelButtonColor: "#6b7280",
-    });
-
-    if (!result.isConfirmed) {
-      return;
-    }
-
-    try {
-      const deleteRes = await axiosSecure.delete(`/my-request/${id}`);
-
-      if (deleteRes.data.deletedCount > 0) {
-        const remainingRequests = myRequests.filter(
-          (request) => request._id != id,
-        );
-
-        setMyRequests(remainingRequests);
-        setTotalRequests((prev) => prev - 1);
-
-        Swal.fire({
-          title: "Deleted!",
-          text: "Donation request has been deleted successfully.",
-          icon: "success",
-        });
-      }
-    } catch (error) {
-      console.log(error);
-      Swal.fire({
-        title: "Error!",
-        text: "Failed to delete donation request.",
-        icon: "error",
-      });
-    }
-  };
-
   return (
     <div className="">
-      {myRequests.length > 0 ? (
+      {allRequests.length > 0 ? (
         <div className="p-3 md:p-6">
           {/* Table Section */}
 
           <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm">
-            <table className="table table-zebra min-w-[600px]">
+            <table className="table table-zebra min-w-150">
               <thead className="bg-red-50">
                 <tr>
                   <th>SL</th>
@@ -127,22 +120,15 @@ const MyRequest = () => {
               </thead>
 
               <tbody>
-                {myRequests.map((request, index) => (
+                {allRequests.map((request, index) => (
                   <tr
                     key={request._id}
                     className="hover:bg-red-50 transition-colors duration-200"
                   >
-                    {/* Serial */}
-
                     <th>
                       {currentPage * docsPerPage - docsPerPage + (index + 1)}
                     </th>
-
-                    {/* Recipient */}
-
                     <td className="font-medium">{request.recipient_name}</td>
-
-                    {/* Location */}
 
                     <td>
                       <div className="text-sm">
@@ -210,10 +196,7 @@ const MyRequest = () => {
 
                         <button
                           onClick={() =>
-                            handleDeleteRequest(
-                              request._id,
-                              request.recipient_name,
-                            )
+                            handleDelete(request._id, request.recipient_name)
                           }
                           className="btn btn-xs btn-error text-white"
                         >
@@ -226,68 +209,67 @@ const MyRequest = () => {
               </tbody>
             </table>
           </div>
-
-          {/* Pagination Section */}
-
-          {totalPages > 0 && (
-            <div className="flex flex-wrap justify-center items-center gap-2 mt-8">
-              <button
-                onClick={handlePrev}
-                disabled={currentPage === 1}
-                className="btn btn-sm md:btn-md"
-              >
-                Prev
-              </button>
-
-              {pages.map((page) => (
-                <button
-                  key={page}
-                  onClick={() => setCurrentPage(page)}
-                  className={`btn btn-sm md:btn-md ${
-                    page === currentPage
-                      ? "bg-red-600 text-white border-red-600"
-                      : ""
-                  }`}
-                >
-                  {page}
-                </button>
-              ))}
-
-              <button
-                onClick={handleNext}
-                disabled={currentPage === totalPages}
-                className="btn btn-sm md:btn-md"
-              >
-                Next
-              </button>
-            </div>
-          )}
-
-          {/* Page Size Selector */}
-
-          <div className="flex justify-center mt-6">
-            <select
-              value={docsPerPage}
-              onChange={(e) => {
-                setDocsPerPage(Number(e.target.value));
-                setCurrentPage(1);
-              }}
-              className="select select-bordered"
-            >
-              <option value={5}>5 per page</option>
-              <option value={10}>10 per page</option>
-              <option value={15}>15 per page</option>
-              <option value={20}>20 per page</option>
-            </select>
-          </div>
         </div>
       ) : (
         <p className="flex justify-center items-center min-h-screen text-3xl font-semibold">
           No Request Found
         </p>
       )}
+
+      {/* Pagination */}
+      {totalPages > 0 && (
+        <div className="flex flex-wrap justify-center items-center gap-2 mt-8">
+          <button
+            onClick={handlePrev}
+            disabled={currentPage === 1}
+            className="btn btn-sm md:btn-md"
+          >
+            Prev
+          </button>
+
+          {pages.map((page) => (
+            <button
+              key={page}
+              onClick={() => setCurrentPage(page)}
+              className={`btn btn-sm md:btn-md ${
+                page === currentPage
+                  ? "bg-red-600 text-white border-red-600"
+                  : ""
+              }`}
+            >
+              {page}
+            </button>
+          ))}
+
+          <button
+            onClick={handleNext}
+            disabled={currentPage === totalPages}
+            className="btn btn-sm md:btn-md"
+          >
+            Next
+          </button>
+        </div>
+      )}
+
+      {/* Page Size Selector */}
+
+      <div className="flex justify-center mt-6">
+        <select
+          value={docsPerPage}
+          onChange={(e) => {
+            setDocsPerPage(Number(e.target.value));
+            setCurrentPage(1);
+          }}
+          className="select select-bordered"
+        >
+          <option value={5}>5 per page</option>
+          <option value={10}>10 per page</option>
+          <option value={15}>15 per page</option>
+          <option value={20}>20 per page</option>
+        </select>
+      </div>
     </div>
   );
 };
 
-export default MyRequest;
+export default AllRequests;

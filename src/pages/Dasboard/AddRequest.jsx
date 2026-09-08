@@ -1,17 +1,20 @@
-import { useContext, useEffect, useState } from "react";
-import { AuthContext } from "../../provider/AuthProvider";
+import { use, useEffect, useState } from "react";
+
 import axios from "axios";
-import useAxios from "../../Hook/useAxios";
 import useAxiosSecure from "../../Hook/useAxiosSecure";
+import { AuthContext } from "../../provider/AuthContext";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router";
 
 export default function AddRequest() {
-  const { user } = useContext(AuthContext);
+  const { user } = use(AuthContext);
   const [upazilas, setUpazilas] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [upazila, setUpazila] = useState("");
   const [district, setDistrict] = useState("");
 
-  const axiosInstance = useAxios();
+  const navigate = useNavigate();
+
   const axiosSecure = useAxiosSecure();
 
   useEffect(() => {
@@ -30,27 +33,35 @@ export default function AddRequest() {
     const requester_name = form.requester_name.value;
     const requester_email = form.requester_email.value;
     const recipient_name = form.recipient_name.value;
+    const hospital_name = form.hospital_name.value;
     const recipient_district = district;
     const recipient_upazila = upazila;
-    const hospital_name = form.hospital_name.value;
     const blood_group = form.blood_group.value;
-    const donation_status = form.donation_status.value;
+    const donation_date = form.date.value;
+    const donation_time = form.time.value;
+    const message = form.request_message.value;
 
     const formData = {
       requester_name,
       requester_email,
       recipient_name,
       recipient_district,
-      recipient_upazila,
       hospital_name,
+      recipient_upazila,
       blood_group,
-      donation_status,
+      donation_date,
+      donation_time,
+      message,
+      donation_status: "pending",
     };
 
     axiosSecure
       .post("/requests", formData)
       .then((res) => {
-        alert(res.data.insertedId);
+        if (res.data.insertedId) {
+          toast.success("Request Added Successfully");
+        }
+        navigate("/dashboard/my-request");
       })
       .catch((err) => {
         console.log(err);
@@ -192,6 +203,7 @@ export default function AddRequest() {
               Donation Date
             </label>
             <input
+              name="date"
               type="date"
               className="w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-300"
             />
@@ -202,6 +214,7 @@ export default function AddRequest() {
               Donation Time
             </label>
             <input
+              name="time"
               type="time"
               className="w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-300"
             />
@@ -214,6 +227,7 @@ export default function AddRequest() {
             Request Message
           </label>
           <textarea
+            name="request_message"
             rows="4"
             placeholder="Explain why blood is urgently needed"
             className="w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-300"
@@ -224,7 +238,7 @@ export default function AddRequest() {
         <div className="pt-4">
           <button
             type="submit"
-            className="w-full bg-red-800 text-white py-2.5 rounded-xl hover:bg-red-600 transition cursor-pointer"
+            className="w-full py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white transition-all duration-300 cursor-pointer font-semibold"
           >
             Request Blood Donation
           </button>

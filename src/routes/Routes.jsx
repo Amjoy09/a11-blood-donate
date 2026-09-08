@@ -15,6 +15,14 @@ import Donate from "../pages/Donate";
 import PaymentSuccess from "../pages/PaymentSuccess";
 import SearchRequest from "../pages/SearchRequest";
 
+import UserProfile from "../pages/UserProfile";
+import AdminRoute from "./AdminRoute";
+import RequestDetails from "../pages/Dasboard/RequestDetails";
+import EditRequest from "../pages/Dasboard/EditRequest";
+import AllRequests from "../pages/AllRequests";
+import DonationRequests from "../pages/DonationRequests";
+import GuestRoute from "../pages/GuestRoute";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -28,7 +36,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/login",
-        element: <LoginPage></LoginPage>,
+        element: (
+          <GuestRoute>
+            <LoginPage></LoginPage>
+          </GuestRoute>
+        ),
       },
       {
         path: "/register",
@@ -50,6 +62,10 @@ const router = createBrowserRouter([
         path: "/search-request",
         element: <SearchRequest></SearchRequest>,
       },
+      {
+        path: "/donation-requests",
+        element: <DonationRequests></DonationRequests>,
+      },
     ],
   },
   {
@@ -66,7 +82,11 @@ const router = createBrowserRouter([
       },
       {
         path: "all-users",
-        element: <AllUsers></AllUsers>,
+        element: (
+          <AdminRoute>
+            <AllUsers></AllUsers>
+          </AdminRoute>
+        ),
       },
       {
         path: "add-request",
@@ -75,6 +95,22 @@ const router = createBrowserRouter([
       {
         path: "my-request",
         element: <MyRequest></MyRequest>,
+      },
+      {
+        path: "all-requests",
+        element: <AllRequests></AllRequests>,
+      },
+      {
+        path: "user-profile",
+        element: <UserProfile></UserProfile>,
+      },
+      {
+        path: "request-details/:id",
+        element: <RequestDetails></RequestDetails>,
+      },
+      {
+        path: "edit-request/:id",
+        element: <EditRequest></EditRequest>,
       },
     ],
   },

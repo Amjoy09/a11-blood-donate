@@ -1,12 +1,13 @@
-import React, { useContext, useEffect } from "react";
-import { AuthContext } from "../provider/AuthProvider";
+import React, { use, useEffect } from "react";
+
 import axios from "axios";
+import { AuthContext } from "../provider/AuthContext";
 const axiosSecure = axios.create({
   baseURL: "http://localhost:5000",
 });
 
 const useAxiosSecure = () => {
-  const { user } = useContext(AuthContext);
+  const { user } = use(AuthContext);
 
   useEffect(() => {
     const reqInterceptor = axiosSecure.interceptors.request.use((config) => {
@@ -21,7 +22,7 @@ const useAxiosSecure = () => {
       (error) => {
         console.log(error);
         return Promise.reject(error);
-      }
+      },
     );
 
     return () => {

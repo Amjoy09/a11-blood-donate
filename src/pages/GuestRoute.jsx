@@ -1,11 +1,10 @@
 import React, { use } from "react";
+import { Navigate } from "react-router";
 import { Loader } from "lucide-react";
-import { Navigate, useLocation } from "react-router";
 import { AuthContext } from "../provider/AuthContext";
 
-const PrivateRoute = ({ children }) => {
-  const { user, loading, roleLoading, userStatus } = use(AuthContext);
-  const location = useLocation();
+const GuestRoute = ({ children }) => {
+  const { user, loading, roleLoading } = use(AuthContext);
 
   if (loading || roleLoading) {
     return (
@@ -15,11 +14,11 @@ const PrivateRoute = ({ children }) => {
     );
   }
 
-  if (!user || userStatus !== "active") {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+  if (user) {
+    return <Navigate to="/" replace />;
   }
 
   return children;
 };
 
-export default PrivateRoute;
+export default GuestRoute;

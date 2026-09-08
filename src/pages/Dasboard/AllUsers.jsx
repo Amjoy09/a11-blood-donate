@@ -6,16 +6,14 @@ const AllUsers = () => {
   const [users, setUsers] = useState([]);
 
   const fetchUsers = () => {
-    axiosSecure.get("/users").then((res) => {
-      setUsers(res.data);
-    });
+    axiosSecure.get("/users").then((res) => setUsers(res.data));
   };
 
   useEffect(() => {
     fetchUsers();
-  }, [axiosSecure]);
+  }, []);
 
-  const handleStatusChange = (email, status) => {
+  const handleChangeStatus = (email, status) => {
     axiosSecure
       .patch(`/update/user/status?email=${email}&status=${status}`)
       .then((res) => {
@@ -24,74 +22,119 @@ const AllUsers = () => {
       });
   };
 
+  const handleChangeRole = (email, role) => {
+    axiosSecure
+      .patch(`/update/user/role?email=${email}&role=${role}`)
+      .then(() => {
+        fetchUsers();
+      });
+  };
+
   return (
-    <div>
-      <div className="overflow-x-auto">
-        <table className="table">
-          {/* head */}
-          <thead>
-            <tr>
-              <th></th>
-              <th>Name</th>
-              <th>Address</th>
-              <th>Status</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {/* row 1 */}
-            {users.map((user) => (
-              <tr>
-                <th></th>
-                <td>
-                  <div className="flex items-center gap-3">
-                    <div className="avatar">
-                      <div className="mask mask-squircle h-12 w-12">
-                        <img
-                          src={user?.mainPhotoUrl}
-                          alt="Avatar Tailwind CSS Component"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <div className="font-bold">{user?.name}</div>
-                      <div className="text-sm opacity-50">{user?.email}</div>
+    <div className="overflow-x-auto rounded-2xl shadow-lg border border-gray-200 bg-white mt-6">
+      <table className="table table-zebra">
+        {/* Head */}
+        <thead className="bg-red-50 text-gray-700">
+          <tr>
+            <th className="py-4">SL</th>
+            <th className="py-4">Name</th>
+            <th className="py-4">Role</th>
+            <th className="py-4">Status</th>
+            <th className="py-4 text-center">Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {/* Extra gap between rows */}
+          <tr className="h-3 bg-transparent"></tr>
+
+          {users.map((user, index) => (
+            <tr
+              key={user._id}
+              className="hover:bg-red-50 transition-all duration-200"
+            >
+              <th>{index + 1}</th>
+
+              <td className="py-5">
+                <div className="flex items-center gap-4">
+                  <div className="avatar">
+                    <div className="mask mask-squircle h-14 w-14 border border-red-200">
+                      <img src={user?.photoURL} alt="User" />
                     </div>
                   </div>
-                </td>
-                <td>
-                  <br />
-                  <span className="badge badge-ghost badge-sm">
-                    {user?.upazila}
-                  </span>
 
-                  <span className="badge badge-ghost badge-sm">
-                    {user?.district}
-                  </span>
-                </td>
-                <td>{user?.status == "active" ? "Active" : "Blocked"}</td>
-                <th className="space-x-3">
-                  {user?.status == "active" ? (
-                    <button
-                      onClick={() => handleStatusChange(user?.email, "blocked")}
-                      className="btn text-md btn-ghost btn-xs bg-red-600 text-white"
-                    >
-                      Block
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => handleStatusChange(user?.email, "active")}
-                      className="btn text-md btn-ghost btn-xs bg-green-600 text-white"
-                    >
-                      Activate
-                    </button>
-                  )}
-                </th>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                  <div>
+                    <div className="font-bold text-gray-800">{user?.name}</div>
+
+                    <div className="text-sm text-gray-500">{user?.email}</div>
+                  </div>
+                </div>
+              </td>
+
+              <td className="py-5">
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => handleChangeRole(user?.email, "donor")}
+                    className={`btn btn-xs ${
+                      user?.role === "donor" ? "bg-red-600 text-white" : ""
+                    }`}
+                  >
+                    Donor
+                  </button>
+
+                  <button
+                    onClick={() => handleChangeRole(user?.email, "volunteer")}
+                    className={`btn btn-xs ${
+                      user?.role === "volunteer"
+                        ? "bg-green-600 text-white"
+                        : ""
+                    }`}
+                  >
+                    Volunteer
+                  </button>
+
+                  <button
+                    onClick={() => handleChangeRole(user?.email, "admin")}
+                    className={`btn btn-xs ${
+                      user?.role === "admin" ? "bg-blue-600 text-white" : ""
+                    }`}
+                  >
+                    Admin
+                  </button>
+                </div>
+              </td>
+
+              <td>
+                <span
+                  className={`badge badge-sm px-3 py-3 font-medium text-white ${
+                    user?.status === "active" ? "bg-green-600" : "bg-red-600"
+                  }`}
+                >
+                  {user?.status}
+                </span>
+              </td>
+
+              <td className="text-center">
+                {user?.status === "active" ? (
+                  <button
+                    onClick={() => handleChangeStatus(user?.email, "blocked")}
+                    className="btn btn-sm bg-red-600 hover:bg-red-700 text-white border-none rounded-xl"
+                  >
+                    Block
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => handleChangeStatus(user?.email, "active")}
+                    className="btn btn-sm bg-green-600 hover:bg-green-700 text-white border-none rounded-xl"
+                  >
+                    Unblock
+                  </button>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };

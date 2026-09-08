@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import useAxios from "../Hook/useAxios";
-import { AuthContext } from "../provider/AuthProvider";
+import { AuthContext } from "../provider/AuthContext";
 
 const Donate = () => {
   const axiosInstance = useAxios();
@@ -8,21 +8,19 @@ const Donate = () => {
 
   const handleCheckout = (e) => {
     e.preventDefault();
-    const donateAmount = e.target.donateAmount.value;
-
+    const donatedAmount = e.target.donatedAmount.value;
     const donorEmail = user?.email;
     const donorName = user?.displayName;
 
-    const formData = {
-      donateAmount,
-      donorEmail,
-      donorName,
-    };
+    const formData = { donatedAmount, donorEmail, donorName };
 
-    axiosInstance.post("/create-payment-checkout", formData).then((res) => {
-      console.log(res.data);
-      window.location.href = res.data.url;
-    });
+    axiosInstance
+      .post("/create-payment-checkout", formData)
+      .then((res) => {
+        console.log(res.data);
+        window.location.href = res.data.url;
+      })
+      .catch((error) => console.log(error));
   };
   return (
     <div>
@@ -31,7 +29,7 @@ const Donate = () => {
         className="flex justify-center items-center min-h-screen gap-4"
       >
         <input
-          name="donateAmount"
+          name="donatedAmount"
           type="text"
           placeholder="Type Here"
           className="input"

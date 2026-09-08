@@ -1,17 +1,23 @@
-import React, { useContext, useEffect, useState } from "react";
-import { FcGoogle } from "react-icons/fc";
-import { Link } from "react-router";
+import React, { use, useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router";
 import { updateProfile } from "firebase/auth";
 import { toast } from "react-toastify";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
-import { AuthContext } from "../provider/AuthProvider";
+
 import auth from "../firebase/firebase.config";
 import axios from "axios";
+import logoImg from "../assets/bloodlogo.webp";
+import { AuthContext } from "../provider/AuthContext";
+import { imageUploadKey } from "../api/imageUpload";
 
 const RegisterPage = () => {
   const [showPass, setShowPass] = useState(false);
-  const { registerWithEmailPassword, setUser, handleGoogleSignin } =
-    useContext(AuthContext);
+  const [showConfirmPass, setShowConfirmPass] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const { registerWithEmailPassword, setUser, logoutUser } = use(AuthContext);
+
+  const navigate = useNavigate();
 
   const [upazilas, setUpazilas] = useState([]);
   const [districts, setDistricts] = useState([]);
@@ -19,7 +25,7 @@ const RegisterPage = () => {
   const [district, setDistrict] = useState("");
 
   useEffect(() => {
-    axios.get("/upazila.json").then((res) => {
+    axios.get("./upazila.json").then((res) => {
       setUpazilas(res.data.upazilas);
     });
 
@@ -31,216 +37,316 @@ const RegisterPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const email = e.target.email.value;
-    const pass = e.target.password.value;
-    const name = e.target.name.value;
-    const photoUrl = e.target.photoUrl;
+    const form = e.target;
+
+    const email = form.email.value;
+    const pass = form.password.value;
+    const confirmPass = form.confirmPassword.value;
+    const name = form.name.value;
+    const blood = form.blood.value;
+
+    const photoUrl = form.photoUrl;
     const file = photoUrl.files[0];
-    const blood = e.target.blood.value;
 
-    const uppercase = /[A-Z]/;
-    const lowercase = /[a-z]/;
+    // Password Validation
 
-    if (pass.length < 6) {
-      toast("Password must be at least 6 characters!");
-      return;
-    }
-    if (!uppercase.test(pass)) {
-      toast("Password must contain at least one uppercase letter!");
-      return;
-    }
-    if (!lowercase.test(pass)) {
-      toast("Password must contain at least one lowercase letter!");
-      return;
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+    if (!passwordRegex.test(pass)) {
+      return toast.error(
+        "Use 8+ characters with uppercase, lowercase, number & symbol.",
+      );
     }
 
-    const res = await axios.post(
-      `https://api.imgbb.com/1/upload?key=1c0d41d0526dec9cad2c3fd2ac8031b3`,
-      { image: file },
-      { headers: { "Content-Type": "multipart/form-data" } }
-    );
+    // Confirm Password Validation
 
-    const mainPhotoUrl = res.data.data.display_url;
+    if (pass !== confirmPass) {
+      return toast.error("Passwords do not match!");
+    }
 
-    const formData = {
-      email,
-      pass,
-      name,
-      mainPhotoUrl,
-      blood,
-      district,
-      upazila,
-    };
+    // Image Validation
 
-    console.log(formData);
+    if (!file) {
+      return toast.error("Please upload a profile image!");
+    }
 
-    if (res.data.success == true) {
-      registerWithEmailPassword(email, pass)
-        .then((userCredential) => {
-          updateProfile(auth.currentUser, {
-            displayName: name,
-            photoURL: mainPhotoUrl,
-          })
-            .then(() => {
-              setUser(userCredential.user);
-              axios
-                .post(`http://localhost:5000/users`, formData)
-                .then((res) => {
-                  console.log(res.data);
-                })
-                .catch((err) => {
-                  console.log(err);
-                });
-              toast("Sign Up Successful!");
-              return;
-            })
-            .catch((error) => {
-              console.log(error);
-              toast("Failed to update profile. Please try again!");
-              return;
-            });
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+    try {
+      setLoading(true);
+
+      // Upload image to imgbb
+
+      const imageData = new FormData();
+      imageData.append("image", file);
+
+      const imageUploadRes = await axios.post(
+        `https://api.imgbb.com/1/upload?key=${imageUploadKey}`,
+        imageData,
+      );
+
+      const mainPhotoUrl = imageUploadRes.data.data.display_url;
+
+      // Create Firebase User
+
+      const userCredential = await registerWithEmailPassword(email, pass);
+
+      // Update User Profile
+
+      await updateProfile(auth.currentUser, {
+        displayName: name,
+        photoURL: mainPhotoUrl,
+      });
+
+      setUser(userCredential.user);
+
+      // Save User in Database
+
+      const formData = {
+        email,
+        name,
+        blood,
+        district,
+        upazila,
+        photoURL: mainPhotoUrl,
+        role: "donor",
+        status: "active",
+      };
+
+      await axios.post("http://localhost:5000/users", formData);
+
+      toast.success("Account Created Successfully!");
+
+      // Logout after registration for better UX
+
+      await logoutUser();
+
+      navigate("/login");
+    } catch (error) {
+      console.log(error);
+
+      toast.error(error.message || "Registration Failed!");
+    } finally {
+      setLoading(false);
     }
   };
 
-  // const googleSignup = () => {
-  //   handleGoogleSignin()
-  //     .then((result) => {
-  //       const user = result.user;
-  //       setUser(user);
-  //       toast("Sign Up with Google successfully");
-  //       return;
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //     });
-  // };
-
   return (
-    <div className="py-10 md:bg-blue-500 bg-none">
-      <div className="md:w-4/12 w-11/12 border-2 mx-auto px-7 py-8 rounded-lg bg-gray-100">
-        <h1 className="text-4xl font-bold text-center mb-7">Sign Up</h1>
+    <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-100 flex items-center justify-center px-4 py-10">
+      <div className="w-full max-w-xl bg-white/80 backdrop-blur-lg border border-red-100 shadow-2xl rounded-3xl p-8 md:p-10">
+        {/* Logo */}
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-          <label className="text-xl font-semibold">Name</label>
-          <input
-            className="border border-gray-400 py-3 px-3 mb-4 rounded-sm"
-            name="name"
-            placeholder="Your Name"
-            type="text"
-          />
-          <label className="text-xl font-semibold">Email</label>
-          <input
-            className="border border-gray-400 py-3 px-3 mb-4 rounded-sm"
-            type="email"
-            name="email"
-            placeholder="Your Email"
-          />
-          <label className="text-xl font-semibold">Photo URL</label>
-          <input
-            className="border border-gray-400 py-3 px-3 mb-4 rounded-sm"
-            type="file"
-            name="photoUrl"
-            placeholder="Photo URL"
-          />
+        <div className="flex flex-col items-center mb-6">
+          <div className="p-1.5 rounded-lg border border-red-500 bg-gray-800">
+            <img
+              className="h-10 w-10 rounded-full"
+              src={logoImg}
+              alt="BloodBond Logo"
+            />
+          </div>
+
+          <h2 className="mt-4 text-3xl font-black tracking-tight text-gray-800">
+            Blood<span className="text-red-600">Bond</span>
+          </h2>
+
+          <p className="text-sm text-gray-500 mt-2 text-center">
+            Join our life-saving donor community
+          </p>
+        </div>
+
+        {/* Heading */}
+
+        <h1 className="text-3xl md:text-4xl font-bold text-center mb-8 text-gray-800">
+          Create Your Account
+        </h1>
+
+        {/* Form */}
+
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          {/* Name */}
+
+          <div>
+            <label className="font-semibold text-gray-700 mb-2 block">
+              Name
+            </label>
+
+            <input
+              className="w-full border border-gray-300 focus:border-red-500 focus:ring-4 focus:ring-red-100 outline-none py-3 px-4 rounded-xl transition-all"
+              name="name"
+              placeholder="Your Name"
+              type="text"
+              required
+            />
+          </div>
+
+          {/* Email */}
+
+          <div>
+            <label className="font-semibold text-gray-700 mb-2 block">
+              Email
+            </label>
+
+            <input
+              className="w-full border border-gray-300 focus:border-red-500 focus:ring-4 focus:ring-red-100 outline-none py-3 px-4 rounded-xl transition-all"
+              type="email"
+              name="email"
+              placeholder="Your Email"
+              required
+            />
+          </div>
+
+          {/* Photo */}
+
+          <div>
+            <label className="font-semibold text-gray-700 mb-2 block">
+              Profile Photo
+            </label>
+
+            <input
+              className="w-full border border-gray-300 file:bg-red-600 file:text-white file:border-none file:px-4 file:py-2 file:rounded-lg file:mr-4 py-2 px-3 rounded-xl"
+              type="file"
+              name="photoUrl"
+              accept="image/*"
+              required
+            />
+          </div>
+
+          {/* Blood Group */}
 
           <select
             name="blood"
-            defaultValue="Choose Blood Group"
-            className="select"
+            defaultValue=""
+            className="select select-bordered w-full rounded-xl"
+            required
           >
-            <option selected>Choose Blood Group</option>
+            <option value="" disabled>
+              Choose Blood Group
+            </option>
 
             <option value="A+">A+</option>
             <option value="A-">A-</option>
-            <option value="B+">B-</option>
-            <option value="C+">C+</option>
-            <option value="C-">C-</option>
+            <option value="B+">B+</option>
+            <option value="B-">B-</option>
             <option value="O+">O+</option>
             <option value="O-">O-</option>
             <option value="AB+">AB+</option>
             <option value="AB-">AB-</option>
           </select>
 
+          {/* District */}
+
           <select
             value={district}
             onChange={(e) => setDistrict(e.target.value)}
-            className="select"
+            className="select select-bordered w-full rounded-xl"
+            required
           >
-            <option selected>Choose District</option>
+            <option value="" disabled>
+              Choose District
+            </option>
 
             {districts.map((d) => (
-              <option value={d?.name} key={d?.id}>
-                {d?.name} ({d?.bn_name})
+              <option key={d.id} value={d.name}>
+                {d.name} ({d.bn_name})
               </option>
             ))}
           </select>
+
+          {/* Upazila */}
+
           <select
             value={upazila}
             onChange={(e) => setUpazila(e.target.value)}
-            className="select"
+            className="select select-bordered w-full rounded-xl"
+            required
           >
-            <option selected>Choose Upazila</option>
+            <option value="" disabled>
+              Choose Upazila
+            </option>
 
             {upazilas.map((u) => (
-              <option value={u?.name} key={u?.id}>
-                {u?.name} ({u?.bn_name})
+              <option key={u.id} value={u.name}>
+                {u.name} ({u.bn_name})
               </option>
             ))}
           </select>
 
-          <label className="text-xl font-semibold">Password</label>
-          <div className=" flex">
-            <input
-              className="border border-gray-400 w-full py-3 mb-4 px-3 rounded-sm relative"
-              type={showPass ? "text" : "password"}
-              name="password"
-              placeholder="Type Password"
-            />
+          {/* Password */}
 
-            <button
-              onClick={() => {
-                setShowPass(!showPass);
-              }}
-            >
-              {showPass ? (
-                <IoMdEye
-                  size={26}
-                  className="absolute top-192 right-15 md:right-137"
-                />
-              ) : (
-                <IoMdEyeOff
-                  size={26}
-                  className="absolute top-192 right-15 md:right-137"
-                />
-              )}
-            </button>
+          <div>
+            <label className="font-semibold text-gray-700 mb-2 block">
+              Password
+            </label>
+
+            <div className="relative">
+              <input
+                className="w-full border border-gray-300 focus:border-red-500 focus:ring-4 focus:ring-red-100 outline-none py-3 px-4 rounded-xl transition-all"
+                type={showPass ? "text" : "password"}
+                name="password"
+                placeholder="Type Password"
+                required
+              />
+
+              <button
+                type="button"
+                onClick={() => setShowPass(!showPass)}
+                className="absolute top-3 right-4 text-gray-500"
+              >
+                {showPass ? <IoMdEye size={24} /> : <IoMdEyeOff size={24} />}
+              </button>
+            </div>
           </div>
+
+          {/* Confirm Password */}
+
+          <div>
+            <label className="font-semibold text-gray-700 mb-2 block">
+              Confirm Password
+            </label>
+
+            <div className="relative">
+              <input
+                className="w-full border border-gray-300 focus:border-red-500 focus:ring-4 focus:ring-red-100 outline-none py-3 px-4 rounded-xl transition-all"
+                type={showConfirmPass ? "text" : "password"}
+                name="confirmPassword"
+                placeholder="Confirm Password"
+                required
+              />
+
+              <button
+                type="button"
+                onClick={() => setShowConfirmPass(!showConfirmPass)}
+                className="absolute top-3 right-4 text-gray-500"
+              >
+                {showConfirmPass ? (
+                  <IoMdEye size={24} />
+                ) : (
+                  <IoMdEyeOff size={24} />
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* Submit Button */}
+
           <button
+            disabled={loading}
             type="submit"
-            className="bg-blue-500 hover:bg-blue-400 text-center text-white text-xl font-semibold py-3 rounded-sm cursor-pointer"
+            className="w-full bg-red-600 hover:bg-red-700 text-white text-lg font-semibold py-3 rounded-xl transition-all shadow-lg hover:shadow-red-200 cursor-pointer disabled:opacity-70"
           >
-            Sign Up
+            {loading ? "Creating Account..." : "Sign Up"}
           </button>
-          <p className="text-[18px] font-semibold text-center">
+
+          {/* Login Link */}
+
+          <p className="text-center text-gray-600 font-medium">
             Already Have an Account?{" "}
             <Link
               to="/login"
-              className="text-blue-400 hover:underline text-[20px]"
+              className="text-red-600 hover:text-red-700 font-bold"
             >
               Login
             </Link>
           </p>
-          {/* <button
-            onClick={googleSignup}
-            className="text-center text-lg font-semibold border border-gray-400 py-2.5 px-3 mt-3 rounded-sm flex items-center justify-center gap-2 hover:bg-orange-500 hover:text-white hover:font-normal cursor-pointer"
-          >
-            <FcGoogle size={24} />
-            Login With Google
-          </button> */}
         </form>
       </div>
     </div>
