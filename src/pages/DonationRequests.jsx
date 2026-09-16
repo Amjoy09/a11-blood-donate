@@ -15,8 +15,6 @@ const DonationRequests = () => {
   const [districts, setDistricts] = useState([]);
   const [upazilas, SetUpazilas] = useState([]);
 
-  console.log(search);
-
   useEffect(() => {
     axios
       .get(

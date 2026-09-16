@@ -44,7 +44,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/register",
-        element: <RegisterPage></RegisterPage>,
+        element: (
+          <GuestRoute>
+            <RegisterPage></RegisterPage>
+          </GuestRoute>
+        ),
       },
       {
         path: "/donate",
