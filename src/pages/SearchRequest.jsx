@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import useAxios from "../Hook/useAxios";
+import { Link } from "react-router";
 
 const SearchRequest = () => {
   const [upazilas, setUpazilas] = useState([]);
@@ -209,9 +210,12 @@ const SearchRequest = () => {
                     <span className="text-xs font-bold text-green-600 bg-green-50 px-3 py-1 rounded-full uppercase">
                       Active Donor
                     </span>
-                    <button className="text-sm font-bold text-red-600 hover:underline">
+                    <Link
+                      to={`/search-donor/${donor._id}`}
+                      className="text-sm font-bold text-red-600 hover:underline"
+                    >
                       View Profile
-                    </button>
+                    </Link>
                   </div>
                 </div>
               ))}

@@ -22,6 +22,7 @@ import EditRequest from "../pages/Dasboard/EditRequest";
 import AllRequests from "../pages/AllRequests";
 import DonationRequests from "../pages/DonationRequests";
 import GuestRoute from "../pages/GuestRoute";
+import DonorProfile from "../pages/DonorProfile";
 
 const router = createBrowserRouter([
   {
@@ -65,6 +66,10 @@ const router = createBrowserRouter([
       {
         path: "/search-request",
         element: <SearchRequest></SearchRequest>,
+      },
+      {
+        path: "/search-donor/:id",
+        element: <DonorProfile></DonorProfile>,
       },
       {
         path: "/donation-requests",
