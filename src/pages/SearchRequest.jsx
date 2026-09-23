@@ -16,8 +16,19 @@ const SearchRequest = () => {
   const axiosInstance = useAxios();
 
   useEffect(() => {
-    axios.get("/upazila.json").then((res) => setUpazilas(res.data.upazilas));
-    axios.get("/district.json").then((res) => setDistricts(res.data.districts));
+    axios.get("/upazila.json").then((res) => {
+      const sorted = [...res.data.upazilas].sort((a, b) =>
+        a.name.localeCompare(b.name),
+      );
+      setUpazilas(sorted);
+    });
+
+    axios.get("/district.json").then((res) => {
+      const sorted = [...res.data.districts].sort((a, b) =>
+        a.name.localeCompare(b.name),
+      );
+      setDistricts(sorted);
+    });
   }, []);
 
   const selectedDistrict = districts.find((d) => d.name === district);

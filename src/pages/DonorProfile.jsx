@@ -7,6 +7,7 @@ const DonorProfile = () => {
   const axiosInstance = useAxios();
 
   const [donor, setDonor] = useState(null);
+  const [showContact, setShowContact] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -34,6 +35,21 @@ const DonorProfile = () => {
     <div className="min-h-screen bg-gray-50 py-12 px-4">
       <div className="max-w-xl mx-auto bg-white rounded-2xl shadow-lg p-8">
         <div className="text-center">
+          {/* Donor Photo Section */}
+          <div className="relative inline-block mb-4">
+            {donor.photoURL ? (
+              <img
+                src={donor.photoURL}
+                alt={donor.name}
+                className="w-28 h-28 rounded-full object-cover border-4 border-white shadow-md mx-auto"
+              />
+            ) : (
+              <div className="w-28 h-28 rounded-full bg-gray-200 border-4 border-white shadow-md mx-auto flex items-center justify-center text-gray-500 font-bold text-2xl">
+                {donor.name?.charAt(0) || "D"}
+              </div>
+            )}
+          </div>
+
           <h2 className="text-3xl font-bold text-gray-900">{donor.name}</h2>
 
           <p className="text-6xl font-extrabold text-red-600 mt-4">
@@ -53,6 +69,24 @@ const DonorProfile = () => {
           <p className="text-gray-600">
             {donor.upazila}, {donor.district}
           </p>
+        </div>
+
+        <div className="mt-8">
+          <button
+            onClick={() => setShowContact(true)}
+            type="button"
+            className="w-full bg-red-600 text-white font-bold py-3 rounded-xl hover:bg-red-700 transition"
+          >
+            Contact Donor
+          </button>
+
+          {showContact && (
+            <div className="mt-4 p-4 bg-gray-50 rounded-xl">
+              <p className="text-sm text-gray-500">Donor Email</p>
+
+              <p className="font-semibold text-black mt-1">{donor.email}</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
