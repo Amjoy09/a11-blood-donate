@@ -29,11 +29,18 @@ const DonationRequests = () => {
       .catch((err) => console.log(err));
 
     axios.get("/district.json").then((res) => {
-      setDistricts(res.data.districts);
+      const sorted = [...res.data.districts].sort((a, b) =>
+        a.name.localeCompare(b.name),
+      );
+
+      setDistricts(sorted);
     });
 
     axios.get("/upazila.json").then((res) => {
-      SetUpazilas(res.data.upazilas);
+      const soretd = [...res.data.upazilas].sort((a, b) =>
+        a.name.localeCompare(b.name),
+      );
+      SetUpazilas(soretd);
     });
   }, [currentPage, docsPerPage, search.blood, search.district, search.upazila]);
 
