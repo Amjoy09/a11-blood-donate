@@ -25,12 +25,18 @@ const RegisterPage = () => {
   const [district, setDistrict] = useState("");
 
   useEffect(() => {
-    axios.get("./upazila.json").then((res) => {
-      setUpazilas(res.data.upazilas);
+    axios.get("/upazila.json").then((res) => {
+      const sorted = [...res.data.upazilas].sort((a, b) =>
+        a.name.localeCompare(b.name),
+      );
+      setUpazilas(sorted);
     });
 
-    axios.get("./district.json").then((res) => {
-      setDistricts(res.data.districts);
+    axios.get("/district.json").then((res) => {
+      const sorted = [...res.data.districts].sort((a, b) =>
+        a.name.localeCompare(b.name),
+      );
+      setDistricts(sorted);
     });
   }, []);
 
@@ -129,6 +135,12 @@ const RegisterPage = () => {
       setLoading(false);
     }
   };
+
+  const selectedDistrict = districts.find((d) => d.name === district);
+
+  const filteredUpazilas = selectedDistrict
+    ? upazilas.filter((u) => u.district_id === selectedDistrict.id)
+    : [];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-100 flex items-center justify-center px-4 py-10">
@@ -236,7 +248,10 @@ const RegisterPage = () => {
 
           <select
             value={district}
-            onChange={(e) => setDistrict(e.target.value)}
+            onChange={(e) => {
+              setDistrict(e.target.value);
+              setUpazila("");
+            }}
             className="select select-bordered w-full rounded-xl"
             required
           >
@@ -257,13 +272,14 @@ const RegisterPage = () => {
             value={upazila}
             onChange={(e) => setUpazila(e.target.value)}
             className="select select-bordered w-full rounded-xl"
+            disabled={!district}
             required
           >
             <option value="" disabled>
-              Choose Upazila
+              {district ? "Choose Upazila" : "Choose District First"}
             </option>
 
-            {upazilas.map((u) => (
+            {filteredUpazilas.map((u) => (
               <option key={u.id} value={u.name}>
                 {u.name} ({u.bn_name})
               </option>

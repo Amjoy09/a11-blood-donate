@@ -184,12 +184,15 @@ export default function Aside() {
                 setOpen={setOpen}
               />
             )}
-            <SidebarLink
-              to="/dashboard/all-requests"
-              icon={<ScrollText size={19} />}
-              label="All Requests"
-              setOpen={setOpen}
-            />
+
+            {role === "admin" && (
+              <SidebarLink
+                to="/dashboard/all-requests"
+                icon={<ScrollText size={19} />}
+                label="All Requests"
+                setOpen={setOpen}
+              />
+            )}
 
             <SidebarLink
               to="/dashboard/user-profile"

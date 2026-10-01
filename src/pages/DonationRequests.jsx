@@ -113,13 +113,9 @@ const DonationRequests = () => {
     (district) => district.name === search.district,
   );
 
-  console.log(selectedDistrict);
-
   const filteredUpazilas = selectedDistrict
     ? upazilas.filter((upazila) => upazila.district_id === selectedDistrict.id)
     : [];
-
-  console.log(filteredUpazilas);
 
   return (
     <div className="max-w-7xl mx-auto p-4">
