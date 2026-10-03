@@ -23,6 +23,7 @@ import AllRequests from "../pages/AllRequests";
 import DonationRequests from "../pages/DonationRequests";
 import GuestRoute from "../pages/GuestRoute";
 import DonorProfile from "../pages/DonorProfile";
+import DonationHistory from "../pages/DonationHistory";
 
 const router = createBrowserRouter([
   {
@@ -120,6 +121,10 @@ const router = createBrowserRouter([
       {
         path: "edit-request/:id",
         element: <EditRequest></EditRequest>,
+      },
+      {
+        path: "donation-history",
+        element: <DonationHistory></DonationHistory>,
       },
     ],
   },

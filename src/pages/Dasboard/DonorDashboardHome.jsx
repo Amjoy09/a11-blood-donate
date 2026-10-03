@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../provider/AuthContext";
 import useAxiosSecure from "../../Hook/useAxiosSecure";
 import { Link } from "react-router";
+import { MailOpen } from "lucide-react";
 
 const DonorDashboardHome = () => {
   const { user } = useContext(AuthContext);
@@ -120,6 +121,9 @@ const DonorDashboardHome = () => {
             <h3 className="text-3xl font-bold text-gray-900 mt-2">
               {dashboardData?.newRequests?.length}
             </h3>
+            <p className="text-xs text-gray-400 mt-2">
+              Matching your blood and location
+            </p>
           </div>
 
           {/* Pending */}
@@ -129,6 +133,9 @@ const DonorDashboardHome = () => {
             <h3 className="text-3xl font-bold text-yellow-500 mt-2">
               {dashboardData?.inProgressRequests?.length}
             </h3>
+            <p className="text-xs text-gray-400 mt-2">
+              Donations you have accepted
+            </p>
           </div>
 
           {/* Accepted */}
@@ -138,6 +145,9 @@ const DonorDashboardHome = () => {
             <h3 className="text-3xl font-bold text-green-600 mt-2">
               {dashboardData?.completedRequests?.length}
             </h3>
+            <p className="text-xs text-gray-400 mt-2">
+              Donations you have completed
+            </p>
           </div>
         </div>
       </div>
@@ -151,7 +161,7 @@ const DonorDashboardHome = () => {
             to={"/donation-requests"}
             className="text-sm font-semibold text-red-600 hover:underline"
           >
-            View All Requests
+            View All
           </Link>
         </div>
 
@@ -164,35 +174,42 @@ const DonorDashboardHome = () => {
             <p className="text-gray-500">No new donation requests right now.</p>
           </div>
         ) : (
-          <div className="bg-white rounded-2xl shadow-sm p-6">
-            {(() => {
-              const request = dashboardData.newRequests[0];
-
-              return (
+          <div className="space-y-4">
+            {dashboardData.newRequests.slice(0, 3).map((request) => (
+              <div
+                key={request._id}
+                className="bg-white rounded-2xl shadow-sm p-6"
+              >
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                  {/* Request Information */}
                   <div>
                     <h4 className="text-lg font-bold text-gray-900">
                       {request.blood_group} Blood Needed
                     </h4>
-
                     <p className="text-gray-500 mt-1">
-                      Requested by: {request.requester_name}
+                      Requester: {request.requester_email}
                     </p>
-
                     <p className="text-gray-500">
                       📍 {request.recipient_upazila},{" "}
                       {request.recipient_district}
                     </p>
 
-                    <p className="text-gray-500">🏥 {request.hospital_name}</p>
+                    <p className="text-gray-500">{request.hospital_name}</p>
+                    <p className="text-sm text-yellow-600 font-semibold mt-2 capitalize">
+                      {request.donation_status}
+                    </p>
                   </div>
 
-                  <button className="bg-red-600 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-red-700 transition">
+                  {/* Button */}
+                  <Link
+                    to={`/dashboard/request-details/${request._id}`}
+                    className="bg-red-600 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-red-700 transition"
+                  >
                     View Request
-                  </button>
+                  </Link>
                 </div>
-              );
-            })()}
+              </div>
+            ))}
           </div>
         )}
       </div>
@@ -202,23 +219,32 @@ const DonorDashboardHome = () => {
         <h3 className="text-2xl font-bold text-gray-900 mb-4">Quick Actions</h3>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          <button className="bg-white rounded-2xl shadow-sm p-6 text-left hover:shadow-md transition">
+          <Link
+            to="/donation-requests"
+            className="bg-white rounded-2xl shadow-sm p-6 text-left hover:shadow-md transition block"
+          >
             <h4 className="text-lg font-bold text-gray-900">View Requests</h4>
 
             <p className="text-sm text-gray-500 mt-1">
               See people who need your help.
             </p>
-          </button>
+          </Link>
 
-          <button className="bg-white rounded-2xl shadow-sm p-6 text-left hover:shadow-md transition">
+          <Link
+            to={"/dashboard/user-profile"}
+            className="bg-white rounded-2xl shadow-sm p-6 text-left hover:shadow-md transition"
+          >
             <h4 className="text-lg font-bold text-gray-900">Update Profile</h4>
 
             <p className="text-sm text-gray-500 mt-1">
               Keep your donor information updated.
             </p>
-          </button>
+          </Link>
 
-          <button className="bg-white rounded-2xl shadow-sm p-6 text-left hover:shadow-md transition">
+          <Link
+            to={"/dashboard/donation-history"}
+            className="bg-white rounded-2xl shadow-sm p-6 text-left hover:shadow-md transition"
+          >
             <h4 className="text-lg font-bold text-gray-900">
               Donation History
             </h4>
@@ -226,7 +252,7 @@ const DonorDashboardHome = () => {
             <p className="text-sm text-gray-500 mt-1">
               See your previous donations.
             </p>
-          </button>
+          </Link>
         </div>
       </div>
     </div>
