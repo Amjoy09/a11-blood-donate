@@ -37,7 +37,7 @@ export default function Aside() {
     <>
       {/* MOBILE TOPBAR */}
 
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-[60] bg-gray-950 border-b border-gray-800 px-4 h-16 flex items-center justify-between">
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-60 bg-gray-950 border-b border-gray-800 px-4 h-16 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <img
             src={logoImg}
