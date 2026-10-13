@@ -123,7 +123,7 @@ const Navbar = () => {
 
             {user && (
               <NavLink
-                to="/payment-success"
+                to="/funding"
                 className={({ isActive }) =>
                   `text-sm font-bold transition-colors ${
                     isActive
@@ -349,7 +349,7 @@ const Navbar = () => {
 
               {user && (
                 <NavLink
-                  to="/payment-success"
+                  to="/funding"
                   onClick={handleMobileLinkClick}
                   className={({ isActive }) =>
                     `px-4 py-3 rounded-xl text-sm font-bold transition-colors ${

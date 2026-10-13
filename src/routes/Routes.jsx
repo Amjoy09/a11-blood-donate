@@ -24,6 +24,7 @@ import DonationRequests from "../pages/DonationRequests";
 import GuestRoute from "../pages/GuestRoute";
 import DonorProfile from "../pages/DonorProfile";
 import DonationHistory from "../pages/DonationHistory";
+import Funding from "../pages/Funding";
 
 const router = createBrowserRouter([
   {
@@ -46,11 +47,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/register",
-        element: (
-          <GuestRoute>
-            <RegisterPage></RegisterPage>
-          </GuestRoute>
-        ),
+        element: <RegisterPage></RegisterPage>,
       },
       {
         path: "/donate",
@@ -75,6 +72,10 @@ const router = createBrowserRouter([
       {
         path: "/donation-requests",
         element: <DonationRequests></DonationRequests>,
+      },
+      {
+        path: "/funding",
+        element: <Funding></Funding>,
       },
     ],
   },
